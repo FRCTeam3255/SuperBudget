@@ -6,8 +6,9 @@ from typing import Union
 import glob
 from pathlib import Path
 import pandas as pd
-from pprint import pprint
 import PyPDF2
+from IPython.display import display
+
 
 # %%
 # importing required modules
@@ -43,7 +44,7 @@ def extract_total_frm_str(text: str) -> Union[float, None]:
         'Sub Total', '').replace('(Incl.Tax)', '')
     text = text.replace('Food & Bev Total:', '')
     search = re.compile(
-        r"(\(\$\d*\.\d*\)|Total( Payment)?[:]?\s*\$[\s]?\d*\.\d*)")
+        r"(\(\$\d*\.\d*\)|Total( Payment)?:?\s*\$[\s]?\d*\.\d*)")
     sub_search = re.compile(r"\d*\.\d*")
     search_results = search.search(text)
     if search_results is None:
@@ -114,7 +115,7 @@ try:
     unparsed_pdfs_df
 except NameError:
     unparsed_pdfs_df = df.loc[df['total'].isnull()]
-unparsed_pdfs_df
+display(unparsed_pdfs_df)
 
 # %%
 print("**** Setting unparsed totals from filename ****")
@@ -122,30 +123,6 @@ df.loc[df.index.isin(unparsed_pdfs_df.index), 'total'] = unparsed_pdfs_df['filen
     '.').str[0].str.split('$').str[1].str.replace('_', '.').astype('float')
 print("**** Files without totals ****")
 df.loc[df['total'].isnull()]
-
-
-# %%
-#
-# for unparsed_pdf in unparsed_pdfs_df['filename'].items():
-# 	# print(unparsed_pdf[1])
-# 	file_name = unparsed_pdf[1]
-# 	print("*"*5, file_name, "*"*5)
-# file_name = '2021_12_14 CTRE Order 100007478.pdf'
-# text = extract_pdf_text(file_path=root_path+file_name)
-# print(text)
-
-
-# def extract_total_frm_str2(text: str) -> float:
-# 	import re
-# 	search = re.compile(r"Total( Payment)?[:]?\s*\$[\s]?\d*\.\d*")
-# 	sub_search = re.compile(r"\d*\.\d*")
-# 	search_results = search.search(text.title())
-# 	if search_results is None:
-# 		return None
-# 	pdf_total = float(sub_search.search(search_results.group()).group())
-# 	return pdf_total
-
-# extract_total_frm_str2(text)
 
 # %% [markdown]
 # # Analysis Outputs
@@ -193,9 +170,9 @@ date_cutoff = '3/1/22'
 # %%
 aux = df.loc[df['date'] < date_cutoff]
 print(aux['total'].sum())
-aux
+display(aux)
 
 # %%
 aux = df.loc[df['date'] >= date_cutoff]
 print(aux['total'].sum())
-aux
+display(aux)
