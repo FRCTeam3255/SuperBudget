@@ -61,22 +61,20 @@ def get_pdf_total(file_path: str) -> str:
 # # Configuration
 
 # %%
-root_paths = [
-    "/Users/Tayler/Documents/Robotics/Documents/2022 Specific/Receipts/",
-    "/Users/Tayler/Documents/Robotics/Documents/2022 Specific/Receipts/Submitted/*/",
-    "/Users/Tayler/Documents/Robotics/Documents/2022 Specific/Receipts/Submitted/",
-    # "/Users/Tayler/Documents/Robotics/Documents/2022 Specific/Receipts/Physical Receipts/",
-    # "/Users/Tayler/Documents/Robotics/Documents/2022 Specific/Receipts/Sykora Receipts/",
-    # "/Users/Tayler/Documents/Robotics/Documents/2022 Specific/Receipts/PAID/"
-]
+# Read in file paths
+root_paths = pd.read_csv(
+    'file_paths.csv',
+    comment='#',  # comment
+    index_col=0,
+    header=None,
+).index.to_list()
+display(root_paths)
 
 
 # %% [markdown]
 # # Run
 
 # %%
-
-
 file_paths = []
 for root_path in root_paths:
     file_paths += glob.glob(f"{root_path}*.pdf") + \
@@ -111,10 +109,7 @@ df.sort_values('total', ascending=False)  # .to_csv('items.csv')
 
 # %%
 print("**** Files with parsing errors ****")
-try:
-    unparsed_pdfs_df
-except NameError:
-    unparsed_pdfs_df = df.loc[df['total'].isnull()]
+unparsed_pdfs_df = df.loc[df['total'].isnull()]
 display(unparsed_pdfs_df)
 
 # %%
