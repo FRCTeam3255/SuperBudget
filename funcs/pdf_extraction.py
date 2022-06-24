@@ -48,8 +48,7 @@ def _extract_total_frm_str(text: str) -> Union[float, None]:
 def _expand_wildcard_paths(root_paths: Collection) -> Collection:
     file_paths = []
     for root_path in root_paths:
-        file_paths += glob.glob(f"{root_path}*.pdf") + \
-            glob.glob(f"{root_path}*.PDF")
+        file_paths += glob.glob(f"{root_path}*.pdf") + glob.glob(f"{root_path}*.PDF")
 
     return file_paths
 

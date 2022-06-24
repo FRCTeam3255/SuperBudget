@@ -22,9 +22,17 @@ Examples:
 
 #### Keyword
 
-CarryOver = Previous year's balance
+CarryOver = Previous year's balance (placed in sponsor column to denote)
 
 ### vendor_category.csv
 
 | vendor | category |
 |--------|----------|
+
+### file_paths.csv
+
+List of folders to check for PDF files.
+
+- Supports wildcards(*) to check sub-folders.
+- Supports comments(#) to temporarily disable checking file path.
+- Each folder to check should be on a new line
