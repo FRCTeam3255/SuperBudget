@@ -8,8 +8,6 @@ from IPython.display import display
 from funcs.pdf_extraction import get_pdf_totals
 from funcs.data_display import display_totals, display_df_split_by_time
 
-# Set dataframes to always show 2 decimal places
-pd.options.display.float_format = "{:.2f}".format
 
 # %% [markdown]
 # ## Validation Outputs

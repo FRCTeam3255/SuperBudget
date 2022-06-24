@@ -1,11 +1,12 @@
+import pandas as pd
+import PyPDF2
 import glob
 from pathlib import Path
 from typing import Collection, Union
 from IPython.display import display
 
-
-import PyPDF2
-import pandas as pd
+# Set dataframes to always show 2 decimal places
+pd.options.display.float_format = "{:.2f}".format
 
 
 def _extract_pdf_text(file_path: str) -> Union[str, None]:
