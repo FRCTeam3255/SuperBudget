@@ -12,37 +12,30 @@ pd.options.display.float_format = "{:.2f}".format
 
 # %% [markdown]
 # ## Validation Outputs
-df = get_pdf_totals('file_paths.csv')
-df.to_csv('Total Costs.csv', index=False)
+spend_df = get_pdf_totals(pdf_file_paths='file_paths.csv', vendor_categories="vendor_category.csv")
+spend_df.to_csv('Total Costs.csv', index=False)
 
-display(df.sort_values('total', ascending=False))
+display(spend_df.sort_values('total', ascending=False))
 
 # %% [markdown]
 # ## Balance
 income_df = pd.read_csv("income.csv")
-
-total_income = income_df['amount'].sum()
-new_income = income_df.loc[income_df['sponsor'] != 'CarryOver']['amount'].sum()
-carryover_income = income_df.loc[income_df['sponsor'] == 'CarryOver']['amount'].sum()
-total_spent = df['total'].sum()
-remaining_balance = total_income - total_spent
-
-print('+ Total Income:\t\t %.2f' % total_income)
-print('\t| New Income\t %.2f' % new_income)
-print('\t| Carry Over\t %.2f' % carryover_income)
-print('- Total Spent:\t\t %.2f' % total_spent)
+carry_over_mask = (income_df['sponsor'] == 'CarryOver')
+print('+ Total Income:\t\t %.2f' % income_df['amount'].sum())
+print('\t| New Income\t %.2f' % income_df.loc[~carry_over_mask]['amount'].sum())
+print('\t| Carry Over\t %.2f' % income_df.loc[carry_over_mask]['amount'].sum())
+print('- Total Spent:\t\t %.2f' % spend_df['total'].sum())
 print('===================')
-print('Remaining Balance:\t %.2f' % remaining_balance)
+print('Remaining Balance:\t %.2f' % (income_df['amount'].sum()-spend_df['total'].sum()))
 
 # %% [markdown]
 # ## Vendor Breakdown
-display(df[['vendor', 'total']].groupby(
+display(spend_df[['vendor', 'total']].groupby(
     'vendor').sum().sort_values('total', ascending=False))
 
 # %% [markdown]
 # ## Vendor Category Breakdown
-cat_df = df.merge(pd.read_csv("vendor_category.csv"), on="vendor")
-display(cat_df.groupby('category').sum(
+display(spend_df.groupby('category').sum(
 ).sort_values('total', ascending=False))
 
 # %% [markdown]
@@ -50,11 +43,11 @@ display(cat_df.groupby('category').sum(
 date_cutoff = '3/1/22'
 
 # %%
-pre_cuttoff_df = df.loc[df['date'] < date_cutoff]
+pre_cuttoff_df = spend_df.loc[spend_df['date'] < date_cutoff]
 print(pre_cuttoff_df['total'].sum())
 display(pre_cuttoff_df)
 
 # %%
-post_cuttoff_df = df.loc[df['date'] >= date_cutoff]
+post_cuttoff_df = spend_df.loc[spend_df['date'] >= date_cutoff]
 print(post_cuttoff_df['total'].sum())
 display(post_cuttoff_df)

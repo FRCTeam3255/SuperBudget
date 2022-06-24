@@ -69,24 +69,24 @@ def _set_unparsed_totals(df: pd.DataFrame) -> None:
     display(df.loc[df['total'].isnull()])
 
 
-def get_pdf_totals(file_paths: Union[str, Collection], print_paths: bool = False) -> pd.DataFrame:
-    if isinstance(file_paths, str) and ('.csv' in file_paths):
+def get_pdf_totals(pdf_file_paths: Union[str, Collection], vendor_categories: str = None, print_paths: bool = False) -> pd.DataFrame:
+    if isinstance(pdf_file_paths, str) and ('.csv' in pdf_file_paths):
         # Read in file paths (ignoring # comments found in file)
-        file_paths = pd.read_csv(
+        pdf_file_paths = pd.read_csv(
             'file_paths.csv',
             comment='#',  # comment
             index_col=0,
             header=None,
         ).index.to_list()
-    elif isinstance(file_paths, list):
+    elif isinstance(pdf_file_paths, list):
         pass  # NOSONAR # Disables linting check on line
     else:
-        raise TypeError('file_paths should be a .csv filename or python list of filepaths')
+        raise TypeError('pdf_file_paths should be a .csv filename string or python list of filepaths')
     rows = []
     if print_paths:
         print('File paths to be used')
-        print(_expand_wildcard_paths(file_paths))
-    for file_path in _expand_wildcard_paths(file_paths):
+        print(_expand_wildcard_paths(pdf_file_paths))
+    for file_path in _expand_wildcard_paths(pdf_file_paths):
         file_name = Path(file_path).name
         folder_name = Path(file_path).parent.name
         total = _extract_total_frm_str(_extract_pdf_text(file_path=file_path))
@@ -101,6 +101,11 @@ def get_pdf_totals(file_paths: Union[str, Collection], print_paths: bool = False
     df['date'] = pd.to_datetime(df['date'])
     df = df.sort_values(['date', 'vendor'])
     df = df.reset_index(drop=True)
+
+    if vendor_categories and ('.csv' in vendor_categories):
+        df = df.merge(pd.read_csv(vendor_categories), on="vendor")
+    else:
+        raise TypeError('vendor_categories should be a .csv filename string')
 
     _set_unparsed_totals(df)
 
