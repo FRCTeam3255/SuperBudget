@@ -1,5 +1,7 @@
 # SuperBudget
 
+Python package for pdf receipt parsing and budget analysis
+
 ## Formatting
 
 Standard: YYYY_MM_DD Vendor FreeText Purchaser
