@@ -20,15 +20,17 @@ display(df.sort_values('total', ascending=False))
 # %% [markdown]
 # ## Balance
 income_df = pd.read_csv("income.csv")
+
 total_income = income_df['amount'].sum()
 new_income = income_df.loc[income_df['sponsor'] != 'CarryOver']['amount'].sum()
 carryover_income = income_df.loc[income_df['sponsor'] == 'CarryOver']['amount'].sum()
-remaining_balance = income_df['amount'].sum() - df['total'].sum()
+total_spent = df['total'].sum()
+remaining_balance = total_income - total_spent
 
 print('+ Total Income:\t\t %.2f' % total_income)
 print('\t| New Income\t %.2f' % new_income)
 print('\t| Carry Over\t %.2f' % carryover_income)
-print('- Total Spent:\t\t %.2f' % round(df['total'].sum(), 2))
+print('- Total Spent:\t\t %.2f' % total_spent)
 print('===================')
 print('Remaining Balance:\t %.2f' % remaining_balance)
 
