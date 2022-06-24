@@ -5,85 +5,54 @@
 # importing required modules
 import pandas as pd
 from IPython.display import display
-from funcs.pdf_extraction import load_pdf_file_totals_to_df
+from funcs.pdf_extraction import get_pdf_totals
 
-
-# %% [markdown]
-# # Configuration
-# Read in file paths (ignoring # comments found in file)
-file_paths = pd.read_csv(
-    'file_paths.csv',
-    comment='#',  # comment
-    index_col=0,
-    header=None,
-).index.to_list()
-
-
-# %% [markdown]
-# # Run
-
-# %%
-
-# %%
-df = load_pdf_file_totals_to_df(file_paths)
-df.to_csv('Total Costs.csv')
-
+# Set dataframes to always show 2 decimal places
+pd.options.display.float_format = "{:.2f}".format
 
 # %% [markdown]
 # ## Validation Outputs
+df = get_pdf_totals('file_paths.csv')
+df.to_csv('Total Costs.csv', index=False)
 
-# %%
-df.sort_values('total', ascending=False)  # .to_csv('items.csv')
-
-# %% [markdown]
-# # Analysis Outputs
+display(df.sort_values('total', ascending=False))
 
 # %% [markdown]
 # ## Balance
-
-# %%
 income_df = pd.read_csv("income.csv")
-print('+ Total Income:\t\t', income_df['amount'].sum())
-print('\t| New Income\t',
-      income_df.loc[income_df['sponsor'] != 'CarryOver']['amount'].sum())
-print('\t| Carry Over\t',
-      income_df.loc[income_df['sponsor'] == 'CarryOver']['amount'].sum())
-print('- Total Spent:\t\t', round(df['total'].sum(), 0))
+total_income = income_df['amount'].sum()
+new_income = income_df.loc[income_df['sponsor'] != 'CarryOver']['amount'].sum()
+carryover_income = income_df.loc[income_df['sponsor'] == 'CarryOver']['amount'].sum()
+remaining_balance = income_df['amount'].sum() - df['total'].sum()
+
+print('+ Total Income:\t\t %.2f' % total_income)
+print('\t| New Income\t %.2f' % new_income)
+print('\t| Carry Over\t %.2f' % carryover_income)
+print('- Total Spent:\t\t %.2f' % round(df['total'].sum(), 2))
 print('===================')
-print('Remaining Balance:\t', round(
-    income_df['amount'].sum() - df['total'].sum(), 0))
+print('Remaining Balance:\t %.2f' % remaining_balance)
 
 # %% [markdown]
 # ## Vendor Breakdown
-
-# %%
-df[['vendor', 'total']].groupby(
-    'vendor').sum().sort_values('total', ascending=False)
+display(df[['vendor', 'total']].groupby(
+    'vendor').sum().sort_values('total', ascending=False))
 
 # %% [markdown]
 # ## Vendor Category Breakdown
-
-# %%
 cat_df = df.merge(pd.read_csv("vendor_category.csv"), on="vendor")
-cat_df[['category', 'total']].groupby('category').sum(
-).sort_values('total', ascending=False).round(0)
+display(cat_df.groupby('category').sum(
+).sort_values('total', ascending=False))
 
 # %% [markdown]
 # ## Reimbursement Calculations
-
-# %%
 date_cutoff = '3/1/22'
 
 # %%
-# importing required modules
-
-
-# %%
-aux = df.loc[df['date'] < date_cutoff]
-print(aux['total'].sum())
-display(aux)
+pre_cuttoff_df = df.loc[df['date'] < date_cutoff]
+print(pre_cuttoff_df['total'].sum())
+display(pre_cuttoff_df)
 
 # %%
-aux = df.loc[df['date'] >= date_cutoff]
-print(aux['total'].sum())
-display(aux)
+post_cuttoff_df = df.loc[df['date'] >= date_cutoff]
+print(post_cuttoff_df['total'].sum())
+display(post_cuttoff_df)

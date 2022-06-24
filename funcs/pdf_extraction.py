@@ -1,6 +1,6 @@
 import glob
 from pathlib import Path
-from typing import Union
+from typing import Collection, Union
 from IPython.display import display
 
 
@@ -45,7 +45,7 @@ def _extract_total_frm_str(text: str) -> Union[float, None]:
     return pdf_total
 
 
-def _expand_wildcard_paths(root_paths):
+def _expand_wildcard_paths(root_paths: Collection) -> Collection:
     file_paths = []
     for root_path in root_paths:
         file_paths += glob.glob(f"{root_path}*.pdf") + \
@@ -54,7 +54,7 @@ def _expand_wildcard_paths(root_paths):
     return file_paths
 
 
-def _set_unparsed_totals(df):
+def _set_unparsed_totals(df: pd.DataFrame) -> None:
     print("**** Files with parsing errors ****")
     unparsed_pdfs_df = df.loc[df['total'].isnull()]
     display(unparsed_pdfs_df)
@@ -62,13 +62,30 @@ def _set_unparsed_totals(df):
     print("**** Setting unparsed totals from filename ****")
     df.loc[df.index.isin(unparsed_pdfs_df.index), 'total'] = unparsed_pdfs_df['filename'].str.split(
         '.').str[0].str.split('$').str[1].str.replace('_', '.').astype('float')
+    df.loc[df.index.isin(unparsed_pdfs_df.index), 'total_source'] = 'file_name'
+    df.loc[~df.index.isin(unparsed_pdfs_df.index), 'total_source'] = 'file_parsing'
 
     print("**** Files still without totals ****")
     display(df.loc[df['total'].isnull()])
 
 
-def load_pdf_file_totals_to_df(file_paths):
+def get_pdf_totals(file_paths: Union[str, Collection], print_paths: bool = False) -> pd.DataFrame:
+    if isinstance(file_paths, str) and ('.csv' in file_paths):
+        # Read in file paths (ignoring # comments found in file)
+        file_paths = pd.read_csv(
+            'file_paths.csv',
+            comment='#',  # comment
+            index_col=0,
+            header=None,
+        ).index.to_list()
+    elif isinstance(file_paths, list):
+        pass  # NOSONAR # Disables linting check on line
+    else:
+        raise TypeError('file_paths should be a .csv filename or python list of filepaths')
     rows = []
+    if print_paths:
+        print('File paths to be used')
+        print(_expand_wildcard_paths(file_paths))
     for file_path in _expand_wildcard_paths(file_paths):
         file_name = Path(file_path).name
         folder_name = Path(file_path).parent.name
