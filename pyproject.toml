@@ -1,0 +1,22 @@
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = ["setuptools>=61.0"]
+
+[project]
+authors = [
+  {name = "Tayler Uva", email = "tuva@euhsd.org"},
+]
+dependencies = [
+  "PyPDF2",
+  "pandas",
+  "matplotlib",
+  "IPython",
+]
+description = "Python package for pdf receipt parsing and budget analysis"
+name = "SuperBudget"
+readme = "README.md"
+requires-python = ">=3.7"
+version = "0.0.1"
+
+[console_scripts]
+main = "SuperBudget:main"

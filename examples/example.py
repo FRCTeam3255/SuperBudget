@@ -5,8 +5,7 @@
 # importing required modules
 import pandas as pd
 from IPython.display import display
-from funcs.pdf_extraction import get_pdf_totals
-from funcs.data_display import display_totals, display_df_split_by_time
+from SuperBudget import get_pdf_totals, display_totals, display_df_split_by_time
 
 
 # %% [markdown]
