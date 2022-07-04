@@ -5,7 +5,7 @@ from .pdf_extraction import get_pdf_totals
 from .data_display import display_totals
 
 
-def main(pdf_file_paths='file_paths.csv', vendor_categories="vendor_category.csv", income_csv_file: str = "income.csv", str_carry_over_tag='CarryOver'):
+def main(pdf_file_paths='file_paths.csv', vendor_categories='vendor_category.csv', income_csv_file: str = 'income.csv', str_carry_over_tag='CarryOver'):
     df_spend = get_pdf_totals(pdf_file_paths=pdf_file_paths, vendor_categories=vendor_categories)
     df_spend.to_csv('Total Costs.csv', index=False)
 
@@ -24,6 +24,6 @@ def main(pdf_file_paths='file_paths.csv', vendor_categories="vendor_category.csv
     return df_spend
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     print('='*8, 'Running SuperBudget', '='*8)
     main()

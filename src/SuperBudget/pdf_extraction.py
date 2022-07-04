@@ -6,7 +6,7 @@ from typing import Collection, Union
 from IPython.display import display
 
 # Set dataframes to always show 2 decimal places
-pd.options.display.float_format = "{:.2f}".format
+pd.options.display.float_format = '{:.2f}'.format
 
 
 def _extract_pdf_text(file_path: str) -> Union[str, None]:
@@ -16,7 +16,7 @@ def _extract_pdf_text(file_path: str) -> Union[str, None]:
     reader_pdf = PyPDF2.PdfFileReader(file_pdf)
 
     # printing number of pages in pdf file
-    full_pdf_text = ""
+    full_pdf_text = ''
     try:
         for page in reader_pdf.pages:
             full_pdf_text += page.extractText()
@@ -25,7 +25,7 @@ def _extract_pdf_text(file_path: str) -> Union[str, None]:
 
     file_pdf.close()
     full_pdf_text = full_pdf_text.replace(
-        "!", "$").replace("\n", " ").replace(",", "")
+        '!', '$').replace('\n', ' ').replace(',', '')
     return full_pdf_text
 
 
@@ -37,8 +37,8 @@ def _extract_total_frm_str(text: str) -> Union[float, None]:
         'Sub Total', '').replace('(Incl.Tax)', '')
     text = text.replace('Food & Bev Total:', '')
     search = re.compile(
-        r"(\(\$\d*\.\d*\)|Total( Payment)?:?\s*\$[\s]?\d*\.\d*)")
-    sub_search = re.compile(r"\d*\.\d*")
+        r'(\(\$\d*\.\d*\)|Total( Payment)?:?\s*\$[\s]?\d*\.\d*)')
+    sub_search = re.compile(r'\d*\.\d*')
     search_results = search.search(text)
     if search_results is None:
         return None
@@ -49,23 +49,23 @@ def _extract_total_frm_str(text: str) -> Union[float, None]:
 def _expand_wildcard_paths(root_paths: Collection) -> Collection:
     file_paths = []
     for root_path in root_paths:
-        file_paths += glob.glob(f"{root_path}*.pdf") + glob.glob(f"{root_path}*.PDF")
+        file_paths += glob.glob(f'{root_path}*.pdf') + glob.glob(f'{root_path}*.PDF')
 
     return file_paths
 
 
 def _set_unparsed_totals(df: pd.DataFrame) -> None:
-    print("**** Files with parsing errors ****")
+    print('**** Files with parsing errors ****')
     unparsed_pdfs_df = df.loc[df['total'].isnull()]
     display(unparsed_pdfs_df)
 
-    print("**** Setting unparsed totals from filename ****")
+    print('**** Setting unparsed totals from filename ****')
     df.loc[df.index.isin(unparsed_pdfs_df.index), 'total'] = unparsed_pdfs_df['filename'].str.split(
         '.').str[0].str.split('$').str[1].str.replace('_', '.').astype('float')
     df.loc[df.index.isin(unparsed_pdfs_df.index), 'total_source'] = 'file_name'
     df.loc[~df.index.isin(unparsed_pdfs_df.index), 'total_source'] = 'file_parsing'
 
-    print("**** Files still without totals ****")
+    print('**** Files still without totals ****')
     display(df.loc[df['total'].isnull()])
 
 
@@ -103,7 +103,7 @@ def get_pdf_totals(pdf_file_paths: Union[str, Collection], vendor_categories: st
     df = df.reset_index(drop=True)
 
     if vendor_categories and ('.csv' in vendor_categories):
-        df = df.merge(pd.read_csv(vendor_categories), on="vendor")
+        df = df.merge(pd.read_csv(vendor_categories), on='vendor')
     else:
         raise TypeError('vendor_categories should be a .csv filename string')
 
