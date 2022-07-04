@@ -4,6 +4,8 @@ Python package for pdf receipt parsing and budget analysis
 
 ## Formatting
 
+### PDF files
+
 Standard: YYYY_MM_DD Vendor FreeText Purchaser
 
 - (FreeText can be anything, normally Order ID, receipt number, or description)
