@@ -25,7 +25,7 @@ def _extract_pdf_text(file_path: str) -> Union[str, None]:
 
     file_pdf.close()
     full_pdf_text = full_pdf_text.replace(
-        '!', '$').replace('\n', ' ').replace(',', '')
+        '!', '$').replace('\n', ' ').replace(',', '').replace('RestrictedAmount', 'Total')
     return full_pdf_text
 
 
@@ -103,10 +103,11 @@ def get_pdf_totals(pdf_file_paths: Union[str, Collection], vendor_categories: st
     df = df.sort_values(['date', 'vendor'])
     df = df.reset_index(drop=True)
 
-    if vendor_categories and ('.csv' in vendor_categories):
-        df = df.merge(pd.read_csv(vendor_categories), on='vendor', how='left')
-    else:
-        raise TypeError('vendor_categories should be a .csv filename string')
+    if vendor_categories:
+        if ('.csv' in vendor_categories):
+            df = df.merge(pd.read_csv(vendor_categories), on='vendor', how='left')
+        else:
+            raise TypeError('vendor_categories should be a .csv filename string')
 
     _set_unparsed_totals(df)
 
