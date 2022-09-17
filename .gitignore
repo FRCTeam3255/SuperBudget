@@ -162,3 +162,4 @@ cython_debug/
 # Data files
 *.csv
 *.pdf
+.DS_Store

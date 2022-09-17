@@ -58,7 +58,8 @@ def _set_unparsed_totals(df: pd.DataFrame) -> None:
     print('**** Files with parsing errors ****')
     unparsed_pdfs_df = df.loc[df['total'].isnull()]
     display(unparsed_pdfs_df)
-
+    if unparsed_pdfs_df.empty:
+        return
     print('**** Setting unparsed totals from filename ****')
     df.loc[df.index.isin(unparsed_pdfs_df.index), 'total'] = unparsed_pdfs_df['filename'].str.split(
         '.').str[0].str.split('$').str[1].str.replace('_', '.').astype('float')
@@ -103,7 +104,7 @@ def get_pdf_totals(pdf_file_paths: Union[str, Collection], vendor_categories: st
     df = df.reset_index(drop=True)
 
     if vendor_categories and ('.csv' in vendor_categories):
-        df = df.merge(pd.read_csv(vendor_categories), on='vendor')
+        df = df.merge(pd.read_csv(vendor_categories), on='vendor', how='left')
     else:
         raise TypeError('vendor_categories should be a .csv filename string')
 
