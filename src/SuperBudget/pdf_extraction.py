@@ -70,7 +70,7 @@ def _set_unparsed_totals(df: pd.DataFrame) -> None:
     display(df.loc[df['total'].isnull()])
 
 
-def get_pdf_totals(pdf_file_paths: Union[str, Collection], vendor_categories: str = None, print_paths: bool = False) -> pd.DataFrame:
+def get_pdf_totals(pdf_file_paths: Union[str, Collection], vendor_categories: str = None, print_paths: bool = False, is_income: bool = False) -> pd.DataFrame:
     if isinstance(pdf_file_paths, str) and ('.csv' in pdf_file_paths):
         # Read in file paths (ignoring # comments found in file)
         pdf_file_paths = pd.read_csv(
@@ -110,5 +110,6 @@ def get_pdf_totals(pdf_file_paths: Union[str, Collection], vendor_categories: st
             raise TypeError('vendor_categories should be a .csv filename string')
 
     _set_unparsed_totals(df)
-
+    if is_income:
+        df=df.rename(columns={'vendor':'sponsor', 'total':'amount'})
     return df
