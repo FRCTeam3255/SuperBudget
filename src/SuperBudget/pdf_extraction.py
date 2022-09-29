@@ -29,6 +29,7 @@ def _extract_pdf_text(file_path: str) -> Union[str, None]:
         .replace("\n", " ")
         .replace(",", "")
         .replace("RestrictedAmount", "Total")
+        .replace("UnrestrictedAmount", "Total")
     )
     return full_pdf_text
 
