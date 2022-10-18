@@ -1,8 +1,11 @@
+from typing import Tuple
 from IPython.display import display
 from pandas import DataFrame
 
 
-def display_df_split_by_time(df_spend: DataFrame, date_cutoff: str) -> None:
+def display_df_split_by_time(
+    df_spend: DataFrame, date_cutoff: str
+) -> Tuple[DataFrame, DataFrame]:
     df_pre_cuttoff = df_spend.loc[df_spend["date"] < date_cutoff]
     print(f"Pre {date_cutoff}")
     print("Total:", df_pre_cuttoff["total"].sum())
@@ -12,6 +15,7 @@ def display_df_split_by_time(df_spend: DataFrame, date_cutoff: str) -> None:
     print(f"Post {date_cutoff}")
     print("Total:", post_cuttoff_df["total"].sum())
     display(post_cuttoff_df.sort_values("total"))
+    return df_pre_cuttoff, post_cuttoff_df
 
 
 def display_totals(
