@@ -44,6 +44,7 @@ def _extract_total_frm_str(text: str) -> Union[float, None]:
         .replace("Subtotal", "")
         .replace("Sub Total", "")
         .replace("(Incl.Tax)", "")
+        .replace("Total : ", "Total:")
     )
     text = text.replace("Food & Bev Total:", "")
     search = re.compile(r"(\(\$\d*\.\d*\)|Total( Payment)?:?\s*\$[\s]?\d*\.\d*)")
