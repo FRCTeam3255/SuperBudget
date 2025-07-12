@@ -128,10 +128,13 @@ def get_pdf_totals(
     df["date"] = pd.to_datetime(df["date"])
     df = df.sort_values(["date", "vendor"])
     df = df.reset_index(drop=True)
+    df["vendor"] = df["vendor"].str.lower().str.replace(".pdf", "")
 
     if vendor_categories:
         if ".csv" in vendor_categories:
-            df = df.merge(pd.read_csv(vendor_categories), on="vendor", how="left")
+            vendors = pd.read_csv(vendor_categories)
+            vendors["vendor"] = vendors["vendor"].str.lower()
+            df = df.merge(vendors, on="vendor", how="left")
         else:
             raise TypeError("vendor_categories should be a .csv filename string")
 
