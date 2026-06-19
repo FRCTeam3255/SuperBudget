@@ -67,8 +67,10 @@ def _expand_wildcard_paths(root_paths: Collection) -> Collection:
 def _extract_total_from_filename(file_name: str) -> Union[float, None]:
     if "$" not in file_name:
         return None
-
-    return float(file_name.split(".")[0].split("$")[1].replace("_", "."))
+    try:
+        return float(file_name.split(".")[0].split("$")[1].replace("_", "."))
+    except ValueError:
+        return None
 
 
 def _set_unparsed_totals(df: pd.DataFrame) -> None:
