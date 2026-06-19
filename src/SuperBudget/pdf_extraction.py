@@ -64,6 +64,13 @@ def _expand_wildcard_paths(root_paths: Collection) -> Collection:
     return file_paths
 
 
+def _extract_total_from_filename(file_name: str) -> Union[float, None]:
+    if "$" not in file_name:
+        return None
+
+    return float(file_name.split(".")[0].split("$")[1].replace("_", "."))
+
+
 def _set_unparsed_totals(df: pd.DataFrame) -> None:
     print("**** Files with parsing errors ****")
     unparsed_pdfs_df = df.loc[df["total"].isnull()]
@@ -72,13 +79,7 @@ def _set_unparsed_totals(df: pd.DataFrame) -> None:
         return
     print("**** Setting unparsed totals from filename ****")
     df.loc[df.index.isin(unparsed_pdfs_df.index), "total"] = (
-        unparsed_pdfs_df["filename"]
-        .str.split(".")
-        .str[0]
-        .str.split("$")
-        .str[1]
-        .str.replace("_", ".")
-        .astype("float")
+        unparsed_pdfs_df["filename"].apply(_extract_total_from_filename)
     )
     df.loc[df.index.isin(unparsed_pdfs_df.index), "total_source"] = "file_name"
     df.loc[~df.index.isin(unparsed_pdfs_df.index), "total_source"] = "file_parsing"
@@ -114,7 +115,11 @@ def get_pdf_totals(
     for file_path in _expand_wildcard_paths(pdf_file_paths):
         file_name = Path(file_path).name
         folder_name = Path(file_path).parent.name
-        total = _extract_total_frm_str(_extract_pdf_text(file_path=file_path))
+        total = (
+            _extract_total_from_filename(file_name)
+            if "$" in file_name
+            else _extract_total_frm_str(_extract_pdf_text(file_path=file_path))
+        )
         rows.append(
             {
                 "total": total,
